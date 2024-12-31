@@ -1,0 +1,44 @@
+// SPDX-License-Identifier: MIT
+
+//day 2 dec 31
+
+// learned about how to deploy contract from other contract.
+// learned about inheritance, virtual and override.
+
+
+pragma solidity ^0.8.18;
+
+import "./SimpleStorage.sol";
+contract storageFactory{
+
+    SimpleStorage[] public listofsimplestorage;
+    function SfDeploy() public
+    {
+        SimpleStorage simplestorage = new SimpleStorage();
+        listofsimplestorage.push(simplestorage);
+
+    }
+
+    function store(uint number) public
+    {
+        listofsimplestorage[number].stores(7);
+    }
+
+    function views(uint number) public view returns(uint){
+        return listofsimplestorage[number].views();
+    }
+     
+}
+
+
+// SPDX-License-Identifier: MIT
+
+pragma solidity 0.8.18;
+
+import {SimpleStorage} from "./SimpleStorage.sol";
+contract inhertance is SimpleStorage
+{
+    function stores(uint number) public override  {
+        favouriteNumber = number+5;
+    }
+}
