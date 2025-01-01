@@ -1,0 +1,24 @@
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.18;
+
+//day 1 dec 30 2024
+
+// This is a simple solidity code with the contract name of SimpleStorage which stores the favorite number of person along with the name. Utilized struct datatype to implement this.
+// Array of struct is implemented to store dynamic number of users data.
+// Mapping is implemented to retrieve the favorite number of the person by using their name.
+
+contract SimpleStorage {
+    uint256 favouriteNumber; //0
+    struct person{
+        string name;
+        uint d;
+    }
+    mapping(string=>uint) public nameTonumber;
+    person[] public detailsofperson;
+    // memory is used in the specical datatypes and it is manipulative. whereas callback cannot be manipulated.
+    function persons(string memory name, uint n) public {
+        detailsofperson.push(person(name,n));
+        nameTonumber[name] = n;
+    }
+    
+}
