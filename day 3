@@ -1,0 +1,18 @@
+// SPDX-License-Identifier: MIT
+// jan 1 2025 - crowd sourcing project.
+
+// today i learned about the chainlink which is a decentralized data provider used for calling real
+// world data. This project utilizes the price value of the fiat currency which can be obtained by the
+// chainlink.
+// This technology has many functionality eg:- event triggering functions , etc,...
+
+// i learned about the payable keyword which makes the smart contract receive ethers. 
+// require keyword provides the ability to check if the condition passes or fails. If fails
+// the operations is reverted but the transaction fee is paid. we can also add a message in the require keyword.
+pragma solidity 0.8.18;
+contract FundMe{
+    function fund() public payable {
+        require(msg.value > 1e18,"not enough");
+    }
+    
+}
