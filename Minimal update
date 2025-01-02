@@ -1,0 +1,21 @@
+jan 2 2025
+
+i learned about chain link keeper functionality.
+it is used for auto triggering of smart contract upon the
+given condition.
+
+eg :
+time based triggering.
+contract should first be compatible with the keeper function
+certain interface must be imported and inherited in the contract.
+checkupkeeper and performupkeeper function is used from the interface.
+checkupkeeper tell if the logic in the performupkeeper can be executed or not.
+
+https://docs.chain.link/chainlink-automation/guides/compatible-contracts
+
+
+The smart contract address is registered on the chain link
+keeper application
+
+i am not going count today and tomorrow since my semester
+exams are on. Minimal updates will be made at the least.
