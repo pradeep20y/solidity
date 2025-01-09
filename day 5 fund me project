@@ -1,0 +1,69 @@
+// SPDX-License-Identifier: MIT
+import {priceConverter} from "../PriceConverter.sol";
+pragma solidity 0.8.18;
+
+
+
+contract FundMe{
+    using priceConverter for uint256;
+    uint256 public constant minimumUsd = 1e18; // constant value cannot be changed.
+    address[] public funder;
+    mapping (address funder => uint amtFunded) public addressToAmount;
+
+    address public immutable owner; // owner is not mutable and is set on deploying the contract.
+    constructor(){
+        owner = msg.sender;
+    }
+
+    function fund() public payable {
+        require(msg.value.getConversionRate() >= minimumUsd,"Please fund me more :(");
+        funder.push(msg.sender);
+        addressToAmount[msg.sender] += msg.value;
+    }
+
+    function withDraw() public onlyOwner{
+        
+        for (uint i=0; i<funder.length; i++)
+        {
+            addressToAmount[funder[i]] = 0;
+        }
+        funder = new address[](0);
+
+        /*payable(msg.sender).transfer(address(this).balance); // transfer function pre-allocates a gas limit which is used for sending ether from one to other address. It reverts on its own.
+        
+        bool check = payable(msg.sender).send(address(this).balance); // unlike trasfer, we explicitly need to mention the revert. rest is the same. 
+        require(check,"reverted"); */
+
+        (bool status,) = payable(msg.sender).call{value : address(this).balance}("");// unlike the above 2, gas limit is not set in built. It is used for calling the function. It returns a tuple of bool status and the function return value.
+        require(status,"reverted");
+
+       
+    }
+    modifier onlyOwner(){ //provides reusability. This allows us to define our own modifier with the condition mentioned. The _; denotes the rest of the code of a function if the require is passed.
+        require(msg.sender == owner);
+        _;
+    }
+ 
+}
+
+
+
+//Library contact
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.18;
+import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
+
+library priceConverter{
+     function getConversionRate(uint etherUser) internal  view returns (uint256){
+        uint256 usd = getPrice();
+        uint256 etherInUsd = (usd * etherUser) / 1e18;
+        return etherInUsd; // converting ether to usd.
+    }
+
+    function getPrice() internal  view returns (uint256) {
+        AggregatorV3Interface priceFeed = AggregatorV3Interface(0x694AA1769357215DE4FAC081bf1f309aDC325306); // initialized interface with the chain link smartcontract contract.
+        (,int256 price,,,) = priceFeed.latestRoundData();
+        return uint256(price * 1e18); // fetching the current value of ether in usd using the chainlink smart contract interface.
+
+    }
+}
