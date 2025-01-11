@@ -1,0 +1,78 @@
+Today i moved from remix to VS code.
+Foundry is a comprehensive development framework for building, testing, and deploying smart contracts on Ethereum and other blockchain platforms.
+Forge is a command line tool used in foundry for manipulating smart contract.
+Foundry comes with Anvil, a local blockchain simulator that helps in fast testing of smart contracts.
+
+i learned about the separate directories maintained for scripting (deploying), sourcing and testing purose of the smart contract.
+Scripting can be written to deploy contracts from the source directory using cheatcodes like vm, which helps in testing edge cases of the smart contract.
+scripting file inherits vm file from the lib directory which enables the scripting file to perform the deployment.
+
+Scripting file
+--------------
+
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.18;
+import {Script} from "../lib/forge-std/src/Script.sol";
+import {SimpleStorage} from "../src/SimpleStorage.sol";
+
+contract DeploySimpleStorage is Script {
+    function run() external returns (SimpleStorage) {
+        vm.startBroadcast(); // everything after this function should send to the RPC.
+        SimpleStorage simpleStorage = new SimpleStorage();
+        vm.stopBroadcast(); // everything before this will be sent to RPC.
+        // The code between these two function is what we want to deploy.
+        return simpleStorage;
+    }
+}
+
+source file
+-----------
+
+// I'm a comment!
+// SPDX-License-Identifier: MIT
+
+pragma solidity 0.8.18;
+
+// pragma solidity ^0.8.0;
+// pragma solidity >=0.8.0 <0.9.0;
+
+contract SimpleStorage {
+    uint256 myFavoriteNumber;
+
+    struct Person {
+        uint256 favoriteNumber;
+        string name;
+    }
+    // uint256[] public anArray;
+    Person[] public listOfPeople;
+
+    mapping(string => uint256) public nameToFavoriteNumber;
+
+    function store(uint256 _favoriteNumber) public {
+        myFavoriteNumber = _favoriteNumber;
+    }
+
+    function retrieve() public view returns (uint256) {
+        return myFavoriteNumber;
+    }
+
+    function addPerson(string memory _name, uint256 _favoriteNumber) public {
+        listOfPeople.push(Person(_favoriteNumber, _name));
+        nameToFavoriteNumber[_name] = _favoriteNumber;
+    }
+}
+
+RPA : RPC (Remote Procedure Call) in blockchain is a protocol that allows communication between a client and a blockchain node, 
+enabling the client to interact with the blockchain by invoking functions like reading data, sending transactions, and interacting with smart contracts.
+{Alchemy provides endpoint URLs(RPC) to connect your application to blockchain nodes.}
+
+cast command helps to interact with the contract, fetches the details about the block, transaction etc..
+
+.env file is a common practice in development envirnment where the credentials of the developer is stored and used. It is not encouraged during production.
+ 
+command to compile the script : forge build
+command to deploy the script : forge script script/<DEPLOY-FILE-NAME> --rpc-url <RPC-LINK> --broadcast --private-key <PRIVATE-KEY>
+command to interacte with the contract : cast send <CONTRACT-ADDRESS> <FUNCTION-SIGNATURE> <ARGUMENT> <RPC-LINK> --broadcast --private-key <PRIVATE-KEY>
+
+
+
