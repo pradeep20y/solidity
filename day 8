@@ -1,0 +1,57 @@
+day 8.
+
+Today i learned about how to test the smart contract using forge.
+below is the code.
+
+// SPDX-Licence-Identifier: MIT
+
+pragma solidity ^0.8.18;
+
+import {Test, console} from "forge-std/Test.sol";
+import {FundMe} from "../src/FundMe.sol";
+
+contract FundMeTest is Test {
+    FundMe fundMe;
+
+    function setUp() external {
+        fundMe = new FundMe();
+    }
+
+    function test_MINIMUM_USD() public {
+        assertEq(fundMe.MINIMUM_USD(), 5e18);
+    }
+
+    function testfundmeowner() public {
+        console.log(msg.sender);
+        console.log(fundMe.i_owner());
+
+        assertEq(fundMe.i_owner(), address(this));
+    }
+
+    function testPriceFeedVersionIsAccurate() public {
+        uint256 num = fundMe.getVersion();
+        console.log(num);
+        assertEq(num, 4);
+    }
+}
+Like the Script contract in forge-std, the Test contract is also a utility provided by Foundry, designed to facilitate smart contract testing. It includes various helpful methods, such as assertEq, which checks if the given two parameters are equal. This is essential for verifying the correctness of your contract logic during testing.
+
+The Console utility, also part of forge-std, allows printing debug information to the terminal, making it easier to inspect values and debug your tests.
+
+In the Remix-based Fund Me project, the Chainlink contract was directly imported to fetch real-time USD price feeds. In contrast, with Foundry, the Chainlink contracts can be pulled from GitHub repositories and used locally in our environment.
+
+To test against real-world data, we use the Sepolia network to communicate with the Chainlink contract. However, instead of directly interacting with Sepolia for every test, we fork the Sepolia blockchain state locally into an Anvil instance. This forked environment enables us to simulate Sepolia's state locally and interact with contracts as if they were on Sepolia.
+
+To fork Sepolia's state, we need the Sepolia RPC URL, which can be obtained from a service like Alchemy or Infura. Forking provides a snapshot of the Sepolia state for testing purposes.
+
+Downsides of Forking:
+Forking relies on API calls to the RPC provider (e.g., Alchemy) to pull the blockchain state.
+If you have many test functions, frequent API calls may quickly consume your API quota, especially if you're using a free-tier plan.
+Running all tests on a forked instance can be slower than testing against a purely local setup.
+
+* Unit tests: Focus on isolating and testing individual smart contract functions or functionalities.
+* Integration tests: Verify how a smart contract interacts with other contracts or external systems.
+* Forking tests: Forking refers to creating a copy of a blockchain state at a specific point in time. This copy, called a fork, is then used to run tests in a simulated environment.
+* Staging tests: Execute tests against a deployed smart contract on a staging environment before mainnet deployment.
+
+
