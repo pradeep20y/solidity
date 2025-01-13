@@ -1,0 +1,38 @@
+Metamask interacts with the website by injecting the window.ethereum in the browser.
+When the metamask is connected with the browser, the RPC of the network and the signer of the metamask is integrated into the code using etherjs or web3 js.
+Along with the compiled contract address, abi of the smart contract the website interacts with the blockchain to make transactions.
+
+async function connect() {
+  if (typeof window.ethereum !== "undefined") {
+    try {
+      await ethereum.request({ method: "eth_requestAccounts" })
+    } catch (error) {
+      console.log(error)
+    }
+    connectButton.innerHTML = "Connected"
+    const accounts = await ethereum.request({ method: "eth_accounts" })
+    console.log(accounts)
+  } else {
+    connectButton.innerHTML = "Please install MetaMask"
+  }
+}
+
+Implemented ERC20 standards.
+---------------------------
+OpenZeppelin's contracts, including the ERC20 implementation, are widely trusted in the Ethereum ecosystem because they are rigorously tested, reviewed, 
+and often audited to ensure security and reliability.
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.18;
+
+import "lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
+
+contract OurToken is ERC20 {
+    constructor(uint256 initialSupply) ERC20("OurToken", "OT") {
+        _mint(msg.sender, initialSupply);
+    }
+}
+
+
+
+
