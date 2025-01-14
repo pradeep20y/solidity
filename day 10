@@ -1,0 +1,41 @@
+Today i learned to interact with the backend using the frontend.
+backend - FundMe contract using Foundry(Forge)
+Frontend - HTML/JAVA SCRIPT(ether.js)
+
+Instead of implemented a series of command in the terminal, all the commands can be executed in a single go using the Markfile. 
+
+Metamask injects ethereum object in the browser. It is then used for sending and receiving transaction in the blockchain.
+
+The below code is deployed in local network (anvil).
+1. Metamask is configured with the anvil RPC and the account is imported using private key.
+2. Deployed contract in the network(anvil).
+3. Deployed contract address is pasted along with its API in the contract.js
+4. Using the provider(RPC) and the signer(User) , the transaction is processed in the local newtwork.
+
+
+fund function (javascript example)
+-------------
+
+async function fund() {
+  const ethAmount = document.getElementById("ethAmount").value             // gets the amount from the input
+  console.log(`Funding with ${ethAmount}...`)
+  if (typeof window.ethereum !== "undefined") {                            // checks if the meta wallet is connected
+    const provider = new ethers.BrowserProvider(window.ethereum)           // Fetches the RPC of the local network from the meta-wallet
+    await provider.send('eth_requestAccounts', [])                         // Sends the transaction request to the metamask account 
+    const signer = await provider.getSigner()                              // retrieves the active Ethereum account from the user's wallet and allows signing transactions
+    const contract = new ethers.Contract(contractAddress, abi, signer)     // instantiate the contract with its abi and the signer
+    try { 
+      const transactionResponse = await contract.fund({                    // Sends transaction to the contract 
+        value: ethers.parseEther(ethAmount),
+      })
+      await transactionResponse.wait(1)                                    // Wait for the transaction to mined.
+    } catch (error) {
+      console.log(error)
+    }
+  } else {
+    fundButton.innerHTML = "Please install MetaMask"
+  }
+}
+
+
+
