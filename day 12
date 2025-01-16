@@ -1,0 +1,45 @@
+// SPDX-License-Identifier: MIT
+
+pragma solidity ^0.8.18;
+
+import {Script} from "forge-std/Script.sol";
+import {BasicNft} from "../src/BasicNft.sol";
+import {DevOpsTools} from "lib/foundry-devops/src/DevOpsTools.sol";
+
+contract MintBasicNft is Script {
+    string public constant TOKENURI =
+        "ipfs://bafybeig37ioir76s7mg5oobetncojcm3c3hxasyd4rvid4jqhy4gkaheg4/?filename=0-PUG.json";
+
+    function run() external {
+        address mostRecentlyDeployed = DevOpsTools.get_most_recent_deployment(
+            "BasicNft",
+            block.chainid
+        );
+
+        mintNftOnContract(mostRecentlyDeployed);
+    }
+
+    function mintNftOnContract(address contractAddress) public {
+        vm.startBroadcast();
+        BasicNft(contractAddress).mintNft(TOKENURI);
+        vm.stopBroadcast();
+    }
+}
+
+Till now i used cast command to interract with contract. Now the above contract will be used to interract with the contract.
+'''
+address mostRecentlyDeployed = DevOpsTools.get_most_recent_deployment(
+            "BasicNft",
+            block.chainid
+        );
+'''
+
+The above line fetches the recently deployed contract address by using the contract name and its chain id.
+
+'''
+string public constant TOKENURI =
+        "ipfs://bafybeig37ioir76s7mg5oobetncojcm3c3hxasyd4rvid4jqhy4gkaheg4/?filename=0-PUG.json";
+'''
+
+local ipfs node allows us the pin the data which seems important to us.This node is centralized until the pinned data is distributed to other nodes.
+Worst case scenario is when this node gets down without broadcasting the data. There are other options like Pinata gateway which makes the IPFS node pin our data in a distributed way.
