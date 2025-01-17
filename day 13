@@ -1,0 +1,24 @@
+SVG (Scalable Vector Graphics) is an XML-based vector image format used to define graphics and illustrations. It is used for rendering two-dimensional images.
+The token URI is the hash of the meta data stored in the IPFS which has the description about the image , link of the image etc.
+
+Using SVG the image can be stored on chain which ensures reliability but comes with a cost.
+The NFT which uses SVG convention can benifit from this methodology.
+This SVG code _**is not**_ a URI, but we can convert this into a URI that a browser can understand by passing all the necessary data through the URL of our browser.
+
+
+Example :- 
+
+data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MDAiIGhlaWdodD0iNTAwIj4KPHRleHQgeD0iMjAwIiB5PSIyNTAiIGZpbGw9IndoaXRlIj5IaSEgWW91IGRlY29kZWQgdGhpcyEgPC90ZXh0Pgo8L3N2Zz4=
+
+data:image/svg+xml;base64 --> mentions its an SVG and encrypted using base64 algo.
+The rest is the token URI which we preceive it to be.
+
+
+
+  function transferNFT(address from, address to, uint256 tokenId) public {
+        require(ownerOf(tokenId) == from, "You are not the owner of this token");
+        require(msg.sender == from || isApprovedForAll(from, msg.sender) || getApproved(tokenId) == msg.sender, 
+            "Caller is not owner or approved");
+         tokenToOwner[tokenId] = to;   
+        _transfer(from, to, tokenId);
+    }
