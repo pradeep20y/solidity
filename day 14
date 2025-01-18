@@ -1,0 +1,62 @@
+/*The approve function in the ERC721 standard allows an NFT owner to grant permission to another address (e.g., a marketplace or user) to transfer 
+a specific token on their behalf without transferring ownership.
+
+function signature : function approve(address to, uint256 tokenId) public;
+
+
+The escrow mechanism helps make a marketplace fully decentralized by temporarily holding the buyer's funds. These funds are transferred to the 
+seller once the NFT is successfully transferred from the seller to the buyer.
+In contrast, platforms like OpenSea act as a third party that controls the funds and ensures the legitimacy of the transaction, fostering trust 
+between the buyer and seller. (trust based platform)*/
+
+
+ // SPDX-Licence-Identifier: MIT
+
+pragma solidity ^0.8.18;
+
+import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+
+contract MarketPlace is ERC721 {
+    uint private s_tokenCounter;
+    mapping(uint256 tokenId => string IPFS_URI) tokenIdToUri;
+    mapping(uint256 tokenId => uint256 price) tokenToPrice;
+    mapping(uint256 tokenId => address creator) copyrightRegis;
+    mapping(uint256 tokenId => address seller) listInMarket;
+
+    constructor() ERC721("MarketPlace", "MP") {
+        s_tokenCounter = 0;
+    }
+
+    function CPRegistration(string memory TokenUri) public {
+        tokenIdToUri[s_tokenCounter] = TokenUri;
+        copyrightRegis[s_tokenCounter] = msg.sender;
+        _safeMint(msg.sender, s_tokenCounter);
+        s_tokenCounter++;
+    }
+
+    function ListToMarket(uint256 tokenId, uint256 price) public {
+        require(_ownerOf(tokenId)==msg.sender,"Only the owner can list it in the marketplace");
+        tokenToPrice[tokenId] = price;
+        listInMarket[tokenId] = msg.sender;
+    }
+    
+    function buy(uint256 tokenId, uint256 price) public {
+        address to = msg.sender;
+        address owner = _ownerOf(tokenId);
+        /* require(owner != address(0), "Token does not exist"); */
+        require(price == tokenToPrice[tokenId],"No sufficient fund");
+        _transfer(owner, to, tokenId);
+    }
+
+    function tokenURI(
+        uint256 tokenId
+    ) public view override returns (string memory) {
+        return tokenIdToUri[tokenId];
+    }
+
+    function ownerOf(uint256 tokenId) public view override returns (address) {
+        address owner = super.ownerOf(tokenId);
+        require(owner != address(0), "Token does not exist");
+        return owner;
+    }
+}
